@@ -11,8 +11,6 @@ import json
 from datetime import datetime, timezone
 import calendar
 
-aaa = "https://openweathermap.org/city/6322515"
-
 CountryISOCode  = 'BR'
 OWM_ApiKey      = '11111111111111111111111111111111'
 OWM_EndPoint    = 'api.openweathermap.org'
