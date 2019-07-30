@@ -11,14 +11,13 @@ import json
 from datetime import datetime, timezone
 import calendar
 
-CountryISOCode  = 'BR'
 OWM_ApiKey      = '11111111111111111111111111111111'
 OWM_EndPoint    = 'api.openweathermap.org'
 OWM_Version     = '2.5'
 OWM_GlobalUrl   = 'https://'+OWM_EndPoint+'/data/'+OWM_Version+'/'
 
 def GetWeatherForecast(v_CityId = -1):
-    global CountryISOCode, OWM_ApiKey, OWM_GlobalUrl
+    global OWM_ApiKey, OWM_GlobalUrl
 
     StrReturn   = ''
     PrevWeekDay = ''
@@ -43,6 +42,8 @@ def GetWeatherForecast(v_CityId = -1):
         }
         Response = requests.request("GET",Url, headers=Headers, params=QueryString)
         jResponse = json.loads(Response.text)
+        #print(json.dumps(jResponse, indent=4, sort_keys=True))
+        CityName = jResponse['city']['name']+', '+jResponse['city']['country']
         for jDay in jResponse['list']:
             UnixTSDate  = jDay['dt']
             Humidity    = jDay['main']['humidity']
@@ -58,16 +59,17 @@ def GetWeatherForecast(v_CityId = -1):
                 PrevWeekDay = StrWeekDay
 
     StrReturn = StrReturn[2:-1].strip()+')'
-    print('You should take an umbrella in these days/hours: '+StrReturn)
+    print('You should take an umbrella in "'+CityName+'" in these days/hours: '+StrReturn)
+    return 0
 
-def GetCityId(v_CityName = 'Ribeirão Preto'):
-    global CountryISOCode, OWM_ApiKey, OWM_GlobalUrl
+def GetCityId(v_CityName = 'São Paulo'):
+    global OWM_ApiKey, OWM_GlobalUrl
 
     CityCode = 0
     Url = OWM_GlobalUrl + 'weather'
     QueryString = {
         'APPID': OWM_ApiKey,
-        'q': v_CityName+','+CountryISOCode.lower()
+        'q': v_CityName
     }
     Headers = {
         'User-Agent': "Mozilla/5.0",
@@ -89,7 +91,9 @@ def GetCityId(v_CityName = 'Ribeirão Preto'):
     return CityCode
 
 def MainProcess():
-    if (GetWeatherForecast(GetCityId()) == -1):
+    CityName = 'Ribeirão Preto'
+
+    if (GetWeatherForecast(GetCityId(CityName)) == -1):
         print('Invalid City Name')
         sys.exit(1)
 
